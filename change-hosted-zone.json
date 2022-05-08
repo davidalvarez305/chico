@@ -1,0 +1,18 @@
+{
+    "Comment": "Creating A Record from CLI",
+    "Changes": [
+      {
+        "Action": "CREATE",
+        "ResourceRecordSet": {
+          "Name": "$DOMAIN",
+          "Type": "A",
+          "TTL": 300,
+          "ResourceRecords": [
+            {
+              "Value": "$IP"
+            }
+          ]
+        }
+      }
+    ]
+  }
