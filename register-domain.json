@@ -1,48 +1,47 @@
 {
-    "DomainName": "YOUR_DOMAIN.com",
-    "DurationInYears": 1,
-    "AutoRenew": true,
-    "AdminContact": {
-      "FirstName": "YOUR_FIRST_NAME",
-      "LastName": "YOUR_LAST_NAME",
-      "ContactType": "PERSON",
-      "OrganizationName": "Your Company, Inc.",
-      "AddressLine1": "Address Line #1",
-      "City": "YOUR_CITY",
-      "State": "YOUR_STATE",
-      "CountryCode": "US",
-      "ZipCode": "YOUR_ZIP",
-      "PhoneNumber": "+1.1234567890",
-      "Email": "name@domain.com"
-    },
-    "RegistrantContact": {
-      "FirstName": "YOUR_FIRST_NAME",
-      "LastName": "YOUR_LAST_NAME",
-      "ContactType": "PERSON",
-      "OrganizationName": "Example",
-      "AddressLine1": "Address Line #1",
-      "City": "YOUR_CITY",
-      "State": "YOUR_STATE",
-      "CountryCode": "US",
-      "ZipCode": "YOUR_ZIP",
-      "PhoneNumber": "+1.1234567890",
-      "Email": "name@domain.com"
-    },
-    "TechContact": {
-      "FirstName": "YOUR_FIRST_NAME",
-      "LastName": "YOUR_LAST_NAME",
-      "ContactType": "PERSON",
-      "OrganizationName": "Example",
-      "AddressLine1": "Address Line #1",
-      "City": "YOUR_CITY",
-      "State": "YOUR_STATE",
-      "CountryCode": "US",
-      "ZipCode": "YOUR_ZIP",
-      "PhoneNumber": "+1.1234567890",
-      "Email": "name@domain.com"
-    },
-    "PrivacyProtectAdminContact": true,
-    "PrivacyProtectRegistrantContact": true,
-    "PrivacyProtectTechContact": true
-  }
-  
+  "DomainName": "YOUR_DOMAIN.com",
+  "DurationInYears": 1,
+  "AutoRenew": true,
+  "AdminContact": {
+    "FirstName": "YOUR_FIRST_NAME",
+    "LastName": "YOUR_LAST_NAME",
+    "ContactType": "PERSON",
+    "OrganizationName": "Your Company, Inc.",
+    "AddressLine1": "Address Line #1",
+    "City": "YOUR_CITY",
+    "State": "YOUR_STATE",
+    "CountryCode": "US",
+    "ZipCode": "YOUR_ZIP",
+    "PhoneNumber": "+1.1234567890",
+    "Email": "name@domain.com"
+  },
+  "RegistrantContact": {
+    "FirstName": "YOUR_FIRST_NAME",
+    "LastName": "YOUR_LAST_NAME",
+    "ContactType": "PERSON",
+    "OrganizationName": "Example",
+    "AddressLine1": "Address Line #1",
+    "City": "YOUR_CITY",
+    "State": "YOUR_STATE",
+    "CountryCode": "US",
+    "ZipCode": "YOUR_ZIP",
+    "PhoneNumber": "+1.1234567890",
+    "Email": "name@domain.com"
+  },
+  "TechContact": {
+    "FirstName": "YOUR_FIRST_NAME",
+    "LastName": "YOUR_LAST_NAME",
+    "ContactType": "PERSON",
+    "OrganizationName": "Example",
+    "AddressLine1": "Address Line #1",
+    "City": "YOUR_CITY",
+    "State": "YOUR_STATE",
+    "CountryCode": "US",
+    "ZipCode": "YOUR_ZIP",
+    "PhoneNumber": "+1.1234567890",
+    "Email": "name@domain.com"
+  },
+  "PrivacyProtectAdminContact": true,
+  "PrivacyProtectRegistrantContact": true,
+  "PrivacyProtectTechContact": true
+}
