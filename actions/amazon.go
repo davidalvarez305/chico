@@ -11,6 +11,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/route53domains"
+	"github.com/davidalvarez305/chico/utils"
 )
 
 func PurchaseDomain(domain string) {
@@ -54,8 +55,23 @@ func PurchaseDomain(domain string) {
 
 	if check.Availability == "AVAILABLE" {
 		fmt.Printf("%v is %s!\n", v, check.Availability)
-		client.RegisterDomain(ctx, &input)
+		_, err := client.RegisterDomain(ctx, &input)
+
+		if err != nil {
+			log.Fatal("Failed to register domain: %v\n", err)
+		}
 	} else {
 		log.Fatal("Domain is not available.")
 	}
+}
+
+func LaunchServer(domain, zoneId string) {
+	fmt.Println(domain)
+	ns, err := utils.GetNameServers(zoneId)
+
+	if err != nil {
+		log.Fatalf("Failed getting nameservers: %v\n", err)
+	}
+
+	fmt.Println(ns)
 }
