@@ -3,8 +3,10 @@ package actions
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
+	"reflect"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -36,19 +38,23 @@ func PurchaseDomain(domain string) {
 	}
 
 	input.DomainName = aws.String(domain)
+	v := reflect.ValueOf(input.DomainName).Elem()
+	fmt.Printf("Domain to purchase: %v\n", v)
 
 	in := route53domains.CheckDomainAvailabilityInput{
 		DomainName: aws.String(domain),
 	}
 
 	check, err := client.CheckDomainAvailability(ctx, &in)
+	fmt.Printf("Checking availability of %v...\n", v)
 
 	if err != nil {
 		log.Fatal("Error loading Register Domain file.")
 	}
 
 	if check.Availability == "AVAILABLE" {
-		// client.RegisterDomain(ctx, input)
+		fmt.Printf("%v is %s!\n", v, check.Availability)
+		client.RegisterDomain(ctx, &input)
 	} else {
 		log.Fatal("Domain is not available.")
 	}

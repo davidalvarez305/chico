@@ -2,26 +2,30 @@ package main
 
 import (
 	"flag"
-	"fmt"
 
-	"github.com/davidalvarez305/chico/controller"
-	"github.com/davidalvarez305/chico/types"
+	"github.com/davidalvarez305/chico/actions"
 )
 
-func main() {
+var (
+	purchase bool
+	domain   string
+	launch   bool
+	crawl    bool
+	deploy   bool
+)
 
-	var command string
-	flag.StringVar(&command, "purchase", "purchase", "Command for purchasing a domain")
-
-	var domain string
+func init() {
+	flag.BoolVar(&purchase, "purchase", false, "Command for purchasing a domain")
+	flag.BoolVar(&launch, "launch", false, "Launch a new server instance.")
+	flag.BoolVar(&crawl, "crawl", false, "Crawl products for a specific website.")
+	flag.BoolVar(&deploy, "deploy", false, "Deploy changes to a specific project.")
 	flag.StringVar(&domain, "d", "chico.com", "Define the domain to be purchased.")
+}
 
-	options := types.Command{
-		Command: command,
-		Value:   domain,
-	}
-
-	fmt.Printf("%+v", options)
+func main() {
 	flag.Parse()
-	controller.Controller(options)
+
+	if purchase {
+		actions.PurchaseDomain(domain)
+	}
 }

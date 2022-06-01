@@ -1,6 +1,7 @@
 package types
 
-type Command struct {
-	Command string
-	Value   string
-}
+type LaunchCommand struct{}
+
+type CrawlCommand struct{}
+
+type DeployCommand struct{}
