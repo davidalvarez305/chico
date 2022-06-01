@@ -3,7 +3,6 @@ package actions
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 
@@ -29,13 +28,14 @@ func PurchaseDomain(domain string) {
 		log.Fatal("Error loading Register Domain file.")
 	}
 
-	fmt.Printf("%s", string(content))
 	var input route53domains.RegisterDomainInput
 	err2 := json.Unmarshal(content, &input)
 
 	if err2 != nil {
 		log.Fatal("Error trying to parse JSON contents into struct.")
 	}
+
+	input.DomainName = aws.String(domain)
 
 	in := route53domains.CheckDomainAvailabilityInput{
 		DomainName: aws.String(domain),

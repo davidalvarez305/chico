@@ -1,6 +1,6 @@
 package types
 
-type Options struct {
-	Command    string
-	SubCommand string
+type Command struct {
+	Command string
+	Value   string
 }
