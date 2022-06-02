@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 
 	"github.com/davidalvarez305/chico/actions"
 )
@@ -27,9 +28,11 @@ func main() {
 
 	if purchase {
 		actions.PurchaseDomain(domain)
+		fmt.Printf("Domain purchased successfully.")
 	}
 
 	if launch {
 		actions.LaunchServer(domain)
+		fmt.Printf("Server launched successfully.")
 	}
 }

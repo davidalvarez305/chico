@@ -70,7 +70,7 @@ func LaunchServer(domain string) {
 	zoneId, err := utils.GetZoneId(domain)
 
 	if err != nil {
-		log.Fatalf("Failed getting nameservers: %v\n", err)
+		log.Fatalf("Failed Getting Zone ID: %v\n", err)
 	}
 
 	fmt.Printf("Zone ID: %s\n", zoneId)
@@ -84,20 +84,18 @@ func LaunchServer(domain string) {
 	key, err := utils.CreateKeyPair(domain)
 
 	if err != nil {
-		log.Fatalf("Failed creating key pair: %v\n", err)
+		log.Fatalf("Failed Creating Key Pair: %v\n", err)
 	}
 
 	publicIp, err := utils.CreateEC2Instance(key)
 
 	if err != nil {
-		log.Fatalf("Failed creating key pair: %v\n", err)
+		log.Fatalf("Failed Purchasing EC2 Instance: %v\n", err)
 	}
 
 	err = utils.ChangeRecordSets(zoneId, domain, publicIp)
 
 	if err != nil {
-		log.Fatalf("Failed changing record sets: %v\n", err)
+		log.Fatalf("Failed Changing Record Sets: %v\n", err)
 	}
-
-	fmt.Println(publicIp)
 }

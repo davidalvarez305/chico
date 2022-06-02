@@ -107,8 +107,10 @@ func CreateKeyPair(domain string) (string, error) {
 
 	client := ec2.NewFromConfig(cfg)
 
+	keyName = strings.Split(domain, ".")[0] + ".pem"
+
 	keyInput := ec2.CreateKeyPairInput{
-		KeyName: &domain,
+		KeyName: &keyName,
 	}
 
 	key, err := client.CreateKeyPair(ctx, &keyInput)
@@ -119,8 +121,6 @@ func CreateKeyPair(domain string) (string, error) {
 
 	v := reflect.ValueOf(key.KeyMaterial).Elem()
 	fmt.Printf("Key Material: %v\n", v)
-
-	keyName = strings.Split(domain, ".")[0] + ".pem"
 
 	err = ioutil.WriteFile(keyName, []byte(*key.KeyMaterial), 400)
 
@@ -146,18 +146,18 @@ func CreateKeyPair(domain string) (string, error) {
 }
 
 func CreateEC2Instance(key string) (string, error) {
-	var publicIpAddress string
+	var publicIpAddress *string
 	ctx := context.TODO()
 
 	cfg, err := config.LoadDefaultConfig(ctx)
 
 	if err != nil {
-		return publicIpAddress, err
+		return *publicIpAddress, err
 	}
 
 	client := ec2.NewFromConfig(cfg)
 
-	imageId := "09d56f8956ab235b3"
+	imageId := "ami-09d56f8956ab235b3"
 	var count int32 = 1
 
 	ins := ec2.RunInstancesInput{
@@ -173,7 +173,7 @@ func CreateEC2Instance(key string) (string, error) {
 	out, err := client.RunInstances(ctx, &ins)
 
 	if err != nil {
-		return publicIpAddress, err
+		return *publicIpAddress, err
 	}
 	fmt.Println("Successfully Purchased EC2 Instance...")
 
@@ -189,17 +189,13 @@ func CreateEC2Instance(key string) (string, error) {
 	o, err := client.DescribeInstances(ctx, &input)
 
 	if err != nil {
-		return publicIpAddress, err
+		return *publicIpAddress, err
 	}
 
-	for i := 0; i < len(o.Reservations); i++ {
-		for l := 0; l < len(o.Reservations[i].Instances); l++ {
-			publicIpAddress = *o.Reservations[i].Instances[i].PublicIpAddress
-		}
-	}
+	publicIpAddress = o.Reservations[0].Instances[0].PublicIpAddress
 	fmt.Println("EC2 Instance IPV4 Public Address: %s\n", publicIpAddress)
 
-	return publicIpAddress, nil
+	return *publicIpAddress, nil
 }
 
 func ChangeRecordSets(zoneId, domain, publicIp string) error {
