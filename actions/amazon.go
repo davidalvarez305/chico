@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"os/user"
 	"reflect"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -25,7 +26,15 @@ func PurchaseDomain(domain string) {
 
 	client := route53domains.NewFromConfig(cfg)
 
-	content, err := ioutil.ReadFile("./register-domain.json")
+	comp, err := user.Current()
+
+	if err != nil {
+		log.Fatal("Error trying to read user.")
+	}
+
+	file := fmt.Sprintf(comp.HomeDir + "/chico/register-domain.json")
+
+	content, err := ioutil.ReadFile(file)
 
 	if err != nil {
 		log.Fatal("Error loading Register Domain file.")

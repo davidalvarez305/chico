@@ -134,9 +134,10 @@ func CreateKeyPair(domain string) (string, error) {
 		return keyName, err
 	}
 
+	src := fmt.Sprintf(keysDir.HomeDir + "/chico/" + keyName)
 	dst := fmt.Sprintf(keysDir.HomeDir + "/keys/" + keyName)
 
-	err = CopyFile(keyName, dst)
+	err = CopyFile(src, dst)
 
 	if err != nil {
 		return keyName, err
@@ -209,7 +210,15 @@ func ChangeRecordSets(zoneId, domain, publicIp string) error {
 
 	client := route53.NewFromConfig(cfg)
 
-	content, err := ioutil.ReadFile("./change-hosted-zone.json")
+	comp, err := user.Current()
+
+	if err != nil {
+		return err
+	}
+
+	file := fmt.Sprintf(comp.HomeDir + "/chico/change-hosted-zone.json")
+
+	content, err := ioutil.ReadFile(file)
 
 	if err != nil {
 		log.Fatal("Error loading Change Hosted Zones file.")
