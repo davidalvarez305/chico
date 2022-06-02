@@ -20,6 +20,35 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/route53domains/types"
 )
 
+func GetZoneId(domain string) (string, error) {
+	var zoneId string
+	ctx := context.TODO()
+
+	cfg, err := config.LoadDefaultConfig(ctx)
+
+	if err != nil {
+		return zoneId, err
+	}
+
+	client := route53.NewFromConfig(cfg)
+
+	var count int32 = 100
+
+	input := route53.ListHostedZonesInput{
+		MaxItems: &count,
+	}
+
+	o, err := client.ListHostedZones(ctx, &input)
+
+	for i := 0; i < len(o.HostedZones); i++ {
+		if strings.Contains(*o.HostedZones[i].Name, domain) {
+			zoneId = *o.HostedZones[i].Id
+		}
+	}
+
+	return zoneId, nil
+}
+
 func ChangeNameservers(domain, zoneId string) error {
 	ctx := context.TODO()
 
@@ -67,12 +96,13 @@ func ChangeNameservers(domain, zoneId string) error {
 }
 
 func CreateKeyPair(domain string) (string, error) {
+	var keyName string
 	ctx := context.TODO()
 
 	cfg, err := config.LoadDefaultConfig(ctx)
 
 	if err != nil {
-		return "", err
+		return keyName, err
 	}
 
 	client := ec2.NewFromConfig(cfg)
@@ -84,24 +114,24 @@ func CreateKeyPair(domain string) (string, error) {
 	key, err := client.CreateKeyPair(ctx, &keyInput)
 
 	if err != nil {
-		return "", err
+		return keyName, err
 	}
 
 	v := reflect.ValueOf(key.KeyMaterial).Elem()
 	fmt.Printf("Key Material: %v\n", v)
 
-	keyName := strings.Split(domain, ".")[0] + ".pem"
+	keyName = strings.Split(domain, ".")[0] + ".pem"
 
 	err = ioutil.WriteFile(keyName, []byte(*key.KeyMaterial), 400)
 
 	if err != nil {
-		return "", err
+		return keyName, err
 	}
 
 	keysDir, err := user.Current()
 
 	if err != nil {
-		return "", err
+		return keyName, err
 	}
 
 	dst := fmt.Sprintf(keysDir.HomeDir + "/keys/" + keyName)
@@ -109,19 +139,20 @@ func CreateKeyPair(domain string) (string, error) {
 	err = CopyFile(keyName, dst)
 
 	if err != nil {
-		return "", err
+		return keyName, err
 	}
 
 	return keyName, nil
 }
 
 func CreateEC2Instance(key string) (string, error) {
+	var publicIpAddress string
 	ctx := context.TODO()
 
 	cfg, err := config.LoadDefaultConfig(ctx)
 
 	if err != nil {
-		return "", err
+		return publicIpAddress, err
 	}
 
 	client := ec2.NewFromConfig(cfg)
@@ -137,11 +168,14 @@ func CreateEC2Instance(key string) (string, error) {
 		KeyName:      &key,
 	}
 
+	fmt.Println("Purchasing EC2 Instance...")
+
 	out, err := client.RunInstances(ctx, &ins)
 
 	if err != nil {
-		return "", err
+		return publicIpAddress, err
 	}
+	fmt.Println("Successfully Purchased EC2 Instance...")
 
 	var insId string
 	for i := 0; i < len(out.Instances); i++ {
@@ -155,20 +189,20 @@ func CreateEC2Instance(key string) (string, error) {
 	o, err := client.DescribeInstances(ctx, &input)
 
 	if err != nil {
-		return "", err
+		return publicIpAddress, err
 	}
 
-	var publicIpAddress string
 	for i := 0; i < len(o.Reservations); i++ {
 		for l := 0; l < len(o.Reservations[i].Instances); l++ {
 			publicIpAddress = *o.Reservations[i].Instances[i].PublicIpAddress
 		}
 	}
+	fmt.Println("EC2 Instance IPV4 Public Address: %s\n", publicIpAddress)
 
 	return publicIpAddress, nil
 }
 
-func ChangeRecordSets(zoneId, domain, instanceId string) error {
+func ChangeRecordSets(zoneId, domain, publicIp string) error {
 	ctx := context.TODO()
 
 	cfg, err := config.LoadDefaultConfig(ctx)
@@ -192,8 +226,13 @@ func ChangeRecordSets(zoneId, domain, instanceId string) error {
 		log.Fatal("Error trying to parse JSON contents into struct.")
 	}
 
+	subDomain := "www." + domain
 	input.Changes[0].ResourceRecordSet.Name = &domain
-	input.Changes[0].ResourceRecordSet.ResourceRecords[0].Value = &instanceId
+	input.Changes[1].ResourceRecordSet.Name = &subDomain
+	input.Changes[0].ResourceRecordSet.ResourceRecords[0].Value = &publicIp
+	input.Changes[1].ResourceRecordSet.ResourceRecords[0].Value = &publicIp
+
+	fmt.Println("Successfully changed record sets on JSON File.")
 
 	in := route53.ChangeResourceRecordSetsInput{
 		HostedZoneId: &zoneId,
@@ -205,6 +244,8 @@ func ChangeRecordSets(zoneId, domain, instanceId string) error {
 	if err != nil {
 		return err
 	}
+
+	fmt.Println("Successfully Changed Record Sets for Hosted Zone.")
 
 	return nil
 }
