@@ -32,9 +32,9 @@ func PurchaseDomain(domain string) {
 	}
 
 	var input route53domains.RegisterDomainInput
-	err2 := json.Unmarshal(content, &input)
+	err = json.Unmarshal(content, &input)
 
-	if err2 != nil {
+	if err != nil {
 		log.Fatal("Error trying to parse JSON contents into struct.")
 	}
 
@@ -66,12 +66,23 @@ func PurchaseDomain(domain string) {
 }
 
 func LaunchServer(domain, zoneId string) {
-	fmt.Println(domain)
-	ns, err := utils.GetNameServers(zoneId)
+	err := utils.ChangeNameservers(domain, zoneId)
 
 	if err != nil {
 		log.Fatalf("Failed getting nameservers: %v\n", err)
 	}
 
-	fmt.Println(ns)
+	key, err := utils.CreateKeyPair(domain)
+
+	if err != nil {
+		log.Fatalf("Failed creating key pair: %v\n", err)
+	}
+
+	instanceId, err := utils.CreateEC2Instance(key)
+
+	if err != nil {
+		log.Fatalf("Failed creating key pair: %v\n", err)
+	}
+
+	fmt.Println(instanceId)
 }
