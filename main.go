@@ -13,6 +13,8 @@ var (
 	crawl    bool
 	deploy   bool
 	domain   string
+	db       string
+	siteName string
 )
 
 func init() {
@@ -21,6 +23,8 @@ func init() {
 	flag.BoolVar(&crawl, "crawl", false, "Crawl products for a specific website.")
 	flag.BoolVar(&deploy, "deploy", false, "Deploy changes to a specific project.")
 	flag.StringVar(&domain, "d", "chico.com", "Define the domain to be purchased.")
+	flag.StringVar(&db, "db", "", "Define this project's database.")
+	flag.StringVar(&siteName, "s", "", "Define this project's database.")
 }
 
 func main() {
@@ -32,7 +36,7 @@ func main() {
 	}
 
 	if launch {
-		actions.LaunchServer(domain)
+		actions.LaunchServer(domain, db, siteName)
 		fmt.Printf("Server launched successfully.")
 	}
 }

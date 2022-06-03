@@ -74,7 +74,7 @@ func PurchaseDomain(domain string) {
 	}
 }
 
-func LaunchServer(domain string) {
+func LaunchServer(domain, db, siteName string) {
 
 	zoneId, err := utils.GetZoneId(domain)
 
@@ -103,6 +103,12 @@ func LaunchServer(domain string) {
 	}
 
 	err = utils.ChangeRecordSets(zoneId, domain, publicIp)
+
+	if err != nil {
+		log.Fatalf("Failed Changing Record Sets: %v\n", err)
+	}
+
+	err = utils.PrepareServer(key, publicIp, domain, db, siteName)
 
 	if err != nil {
 		log.Fatalf("Failed Changing Record Sets: %v\n", err)

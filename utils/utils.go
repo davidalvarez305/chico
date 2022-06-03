@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"os/exec"
 	"os/user"
 	"reflect"
 	"strings"
@@ -251,6 +252,28 @@ func ChangeRecordSets(zoneId, domain, publicIp string) error {
 	}
 
 	fmt.Println("Successfully Changed Record Sets for Hosted Zone.")
+
+	return nil
+}
+
+func PrepareServer(key, publicId, domain, db, siteName string) error {
+	user := os.Getenv("DB_USER")
+	s3Bucket := os.Getenv("AWS_S3_BUCKET")
+	fmt.Println("Copying key to server...")
+	copyKeyCmd := fmt.Sprintf("scp -r -i %s ./prep ubuntu@%s:/home/ubuntu/", key, publicId)
+	_, err := exec.Command("/bin/bash", "-c", copyKeyCmd).Output()
+
+	if err != nil {
+		return nil
+	}
+
+	fmt.Println("Preparing server...")
+	prepareServerCmd := fmt.Sprintf(`ssh -i %s ubuntu@%s "chmod +x ./prep/server.sh && sudo ./prep/server.sh %s %s %s %s %s %s"`, key, publicId, db, user, s3Bucket, domain, siteName, publicId)
+	_, err = exec.Command("/bin/bash", "-c", prepareServerCmd).Output()
+
+	if err != nil {
+		return nil
+	}
 
 	return nil
 }
