@@ -84,11 +84,11 @@ func LaunchServer(domain, db, siteName string) {
 
 	fmt.Printf("Zone ID: %s\n", zoneId)
 
-	err = utils.ChangeNameservers(domain, zoneId)
+	/* err = utils.ChangeNameservers(domain, zoneId)
 
 	if err != nil {
 		log.Fatalf("Failed getting nameservers: %v\n", err)
-	}
+	} */
 
 	key, err := utils.CreateKeyPair(domain)
 

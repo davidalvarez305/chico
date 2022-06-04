@@ -12,6 +12,7 @@ import (
 	"os/user"
 	"reflect"
 	"strings"
+	"time"
 
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
@@ -148,13 +149,13 @@ func CreateKeyPair(domain string) (string, error) {
 }
 
 func CreateEC2Instance(key string) (string, error) {
-	var publicIpAddress *string
+	var publicIpAddress string
 	ctx := context.TODO()
 
 	cfg, err := config.LoadDefaultConfig(ctx)
 
 	if err != nil {
-		return *publicIpAddress, err
+		return publicIpAddress, err
 	}
 
 	client := ec2.NewFromConfig(cfg)
@@ -175,7 +176,7 @@ func CreateEC2Instance(key string) (string, error) {
 	out, err := client.RunInstances(ctx, &ins)
 
 	if err != nil {
-		return *publicIpAddress, err
+		return publicIpAddress, err
 	}
 	fmt.Println("Successfully Purchased EC2 Instance...")
 
@@ -188,16 +189,16 @@ func CreateEC2Instance(key string) (string, error) {
 		InstanceIds: []string{insId},
 	}
 
+	time.Sleep(180 * time.Second)
+
 	o, err := client.DescribeInstances(ctx, &input)
 
 	if err != nil {
-		return *publicIpAddress, err
+		return publicIpAddress, err
 	}
 
-	publicIpAddress = o.Reservations[0].Instances[0].PublicIpAddress
-	fmt.Println("EC2 Instance IPV4 Public Address: %s\n", publicIpAddress)
-
-	return *publicIpAddress, nil
+	publicIpAddress = *o.Reservations[0].Instances[0].PublicIpAddress
+	return publicIpAddress, nil
 }
 
 func ChangeRecordSets(zoneId, domain, publicIp string) error {
@@ -256,11 +257,16 @@ func ChangeRecordSets(zoneId, domain, publicIp string) error {
 	return nil
 }
 
+func transformSiteName(siteName string) string {
+	return strings.Join(strings.Split(siteName, "-"), " ")
+}
+
 func PrepareServer(key, publicId, domain, db, siteName string) error {
 	user := os.Getenv("DB_USER")
 	s3Bucket := os.Getenv("AWS_S3_BUCKET")
+	websiteName := transformSiteName(siteName)
 	fmt.Println("Copying key to server...")
-	copyKeyCmd := fmt.Sprintf("scp -r -i %s ./prep ubuntu@%s:/home/ubuntu/", key, publicId)
+	copyKeyCmd := fmt.Sprintf("scp -r -i %s ./cli/prep ubuntu@%s:/home/ubuntu/", key, publicId)
 	_, err := exec.Command("/bin/bash", "-c", copyKeyCmd).Output()
 
 	if err != nil {
@@ -268,7 +274,7 @@ func PrepareServer(key, publicId, domain, db, siteName string) error {
 	}
 
 	fmt.Println("Preparing server...")
-	prepareServerCmd := fmt.Sprintf(`ssh -i %s ubuntu@%s "chmod +x ./prep/server.sh && sudo ./prep/server.sh %s %s %s %s %s %s"`, key, publicId, db, user, s3Bucket, domain, siteName, publicId)
+	prepareServerCmd := fmt.Sprintf(`ssh -i %s ubuntu@%s "chmod +x ./cli/prep/server.sh && sudo ./cli/prep/server.sh %s %s %s %s %s %s"`, key, publicId, db, user, s3Bucket, domain, websiteName, publicId)
 	_, err = exec.Command("/bin/bash", "-c", prepareServerCmd).Output()
 
 	if err != nil {
