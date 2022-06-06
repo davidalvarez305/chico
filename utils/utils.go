@@ -305,3 +305,19 @@ func CopyFile(src, dst string) error {
 	}
 	return out.Close()
 }
+
+func SecureCopy(keyName, ip, projectName string) {
+	var username = os.Getenv("SERVER_USER")
+	var keysFolder = os.Getenv("KEYS_FOLDER")
+	var folder = os.Getenv("ENV_FOLDER")
+	var prepFolder = os.Getenv("PREP_FOLDER")
+
+	dirPath := folder + "/" + projectName
+	scpCmd := fmt.Sprintf("scp -r -i %s %s@%s:%s %s", keysFolder+keyName, username, ip, prepFolder, dirPath)
+
+	_, err := exec.Command("/bin/bash", "-c", scpCmd).Output()
+
+	if err != nil {
+		fmt.Println("Error while copying file ", err)
+	}
+}

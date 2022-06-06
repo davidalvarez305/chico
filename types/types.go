@@ -106,3 +106,11 @@ type GithubJSONResponse struct {
 	Watchers         int           `json:"watchers"`
 	DefaultBranch    string        `json:"default_branch"`
 }
+
+type Project struct {
+	Repo    string `json:"repo"`
+	Site    string `json:"site"`
+	Key     string `json:"key"`
+	IP      string `json:"ip"`
+	Project string `json:"project"`
+}

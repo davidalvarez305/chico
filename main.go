@@ -11,14 +11,15 @@ import (
 )
 
 var (
-	purchase bool
-	launch   bool
-	crawl    bool
-	deploy   bool
-	domain   string
-	db       string
-	siteName string
-	project  string
+	purchase  bool
+	launch    bool
+	crawl     bool
+	deploy    bool
+	domain    string
+	db        string
+	siteName  string
+	project   string
+	syncFiles bool
 )
 
 func init() {
@@ -30,6 +31,7 @@ func init() {
 	flag.StringVar(&db, "db", "", "Define this project's database.")
 	flag.StringVar(&siteName, "s", "", "Define this project's database.")
 	flag.StringVar(&project, "p", "", "Name of the project to be deployed.")
+	flag.BoolVar(&syncFiles, "sync", false, "Sync all projects.")
 }
 
 func main() {
@@ -53,5 +55,9 @@ func main() {
 		username := os.Getenv("GITHUB_USER")
 		actions.Deploy(username, project)
 		fmt.Printf("Deployed successfully.\n")
+	}
+
+	if syncFiles {
+		actions.SyncFiles()
 	}
 }

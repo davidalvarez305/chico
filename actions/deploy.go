@@ -6,9 +6,11 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/davidalvarez305/chico/types"
+	"github.com/davidalvarez305/chico/utils"
 )
 
 func getRepos(userName string) ([]types.GithubJSONResponse, error) {
@@ -53,4 +55,22 @@ func Deploy(userName string, projectName string) {
 
 	deploymentProject := filterReport(projectName, r)
 	fmt.Printf("Project: %s\n", deploymentProject)
+}
+
+func SyncFiles() {
+	var projects []types.Project
+
+	body, err := os.ReadFile("projects.json")
+
+	if err != nil {
+		log.Fatal("Failed getting repos %v\n", err)
+	}
+
+	json.Unmarshal(body, &projects)
+
+	for i := 0; i < len(projects); i++ {
+		utils.SecureCopy(projects[i].Key, projects[i].IP, projects[i].Project)
+	}
+
+	fmt.Printf("Finalized syncing folders.")
 }
