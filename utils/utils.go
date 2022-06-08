@@ -20,6 +20,7 @@ import (
 	route53types "github.com/aws/aws-sdk-go-v2/service/route53/types"
 	"github.com/aws/aws-sdk-go-v2/service/route53domains"
 	"github.com/aws/aws-sdk-go-v2/service/route53domains/types"
+	project "github.com/davidalvarez305/chico/types"
 )
 
 func GetZoneId(domain string) (string, error) {
@@ -320,4 +321,20 @@ func SecureCopy(keyName, ip, projectName string) {
 	if err != nil {
 		fmt.Println("Error while copying file ", err)
 	}
+}
+
+func DeployProject(project project.Project) error {
+	username := os.Getenv("SERVER_USER")
+	startDocker := "sudo docker-compose -f docker-compose.yml down && sudo docker-compose -f ~/client_template/docker-compose.yml up --build"
+	cloneGithubRepo := "sudo rm -r soflo_node && git clone " + project.Repo
+	keysFolder := os.Getenv("KEYS_FOLDER")
+
+	cmd := fmt.Sprintf(`ssh -i %s %s@%s "cd && %s && %s"`, keysFolder+project.Key, project.IP, username, cloneGithubRepo, startDocker)
+	_, err := exec.Command("/bin/bash", "-c", cmd).Output()
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

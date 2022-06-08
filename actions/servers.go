@@ -35,26 +35,45 @@ func getRepos(userName string) ([]types.GithubJSONResponse, error) {
 	return repo, nil
 }
 
-func filterReport(projectName string, repos []types.GithubJSONResponse) string {
-	var project string
-	for i := 0; i < len(repos); i++ {
-		if strings.Contains(repos[i].CloneURL, projectName) {
-			project = repos[i].CloneURL
+func filterReport(projectName string) types.Project {
+	var project types.Project
+	var projects []types.Project
+
+	body, err := os.ReadFile("projects.json")
+
+	if err != nil {
+		log.Fatal("Failed getting repos %v\n", err)
+	}
+
+	json.Unmarshal(body, &projects)
+	for i := 0; i < len(projects); i++ {
+		if strings.Contains(projects[i].Project, projectName) {
+			project = projects[i]
 		}
 	}
 
 	return project
 }
 
-func Deploy(userName string, projectName string) {
-	r, err := getRepos(userName)
+func Deploy(all bool, userName, projectName string) {
+	var projects []types.Project
+
+	body, err := os.ReadFile("projects.json")
 
 	if err != nil {
 		log.Fatal("Failed getting repos %v\n", err)
 	}
 
-	deploymentProject := filterReport(projectName, r)
-	fmt.Printf("Project: %s\n", deploymentProject)
+	json.Unmarshal(body, &projects)
+
+	if all {
+		for i := 0; i < len(projects); i++ {
+			utils.DeployProject(projects[i])
+		}
+	} else {
+		deploymentProject := filterReport(projectName)
+		utils.DeployProject(deploymentProject)
+	}
 }
 
 func SyncFiles() {
