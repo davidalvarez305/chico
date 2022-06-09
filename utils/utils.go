@@ -1,12 +1,14 @@
 package utils
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
 	"os/exec"
 	"os/user"
@@ -352,6 +354,37 @@ func ReplicateDB(project project.Project) error {
 	if err != nil {
 		return err
 	}
+
+	return nil
+}
+
+func CrawlProducts(keyword string) error {
+
+	url := os.Getenv("SOFLO_GO_URL")
+
+	b := map[string]string{
+		keyword: keyword,
+	}
+	client := &http.Client{}
+	out, err := json.Marshal(b)
+
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(out))
+	if err != nil {
+		fmt.Println("Request failed: ", err)
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println("Error while crawling...", err)
+		return err
+	}
+	defer resp.Body.Close()
 
 	return nil
 }

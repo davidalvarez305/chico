@@ -108,3 +108,7 @@ func Replicate(projectName string) {
 		utils.ReplicateDB(projects[i])
 	}
 }
+
+func Crawl(keyword string) {
+	utils.CrawlProducts(keyword)
+}
