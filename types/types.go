@@ -113,4 +113,5 @@ type Project struct {
 	Key     string `json:"key"`
 	IP      string `json:"ip"`
 	Project string `json:"project"`
+	DB      string `json:"db"`
 }

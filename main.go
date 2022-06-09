@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"os"
 
 	"github.com/davidalvarez305/chico/actions"
 	"github.com/joho/godotenv"
@@ -20,7 +19,6 @@ var (
 	siteName  string
 	project   string
 	syncFiles bool
-	all       bool
 )
 
 func init() {
@@ -33,7 +31,6 @@ func init() {
 	flag.StringVar(&siteName, "s", "", "Define this project's database.")
 	flag.StringVar(&project, "p", "", "Name of the project to be deployed.")
 	flag.BoolVar(&syncFiles, "sync", false, "Sync all projects.")
-	flag.BoolVar(&all, "all", false, "Deploy all projects.")
 }
 
 func main() {
@@ -54,8 +51,7 @@ func main() {
 	}
 
 	if deploy {
-		username := os.Getenv("GITHUB_USER")
-		actions.Deploy(all, username, project)
+		actions.Deploy(project)
 		fmt.Printf("Deployed successfully.\n")
 	}
 

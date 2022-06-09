@@ -325,11 +325,28 @@ func SecureCopy(keyName, ip, projectName string) {
 
 func DeployProject(project project.Project) error {
 	username := os.Getenv("SERVER_USER")
-	startDocker := "sudo docker-compose -f docker-compose.yml down && sudo docker-compose -f ~/client_template/docker-compose.yml up --build"
-	cloneGithubRepo := "sudo rm -r soflo_node && git clone " + project.Repo
+	startDocker := "sudo docker-compose -f ~/client_template/docker-compose.yml up --build"
+	cloneGithubRepo := "sudo rm -r client_template && git clone " + project.Repo
 	keysFolder := os.Getenv("KEYS_FOLDER")
 
 	cmd := fmt.Sprintf(`ssh -i %s %s@%s "cd && %s && %s"`, keysFolder+project.Key, project.IP, username, cloneGithubRepo, startDocker)
+	_, err := exec.Command("/bin/bash", "-c", cmd).Output()
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func ReplicateDB(project project.Project) error {
+	dbBucket := os.Getenv("AWS_S3_BUCKET") + "/db/"
+	key := os.Getenv("KEYS_FOLDER") + project.Key
+	dbPassword := os.Getenv("DB_PASSWORD")
+	user := os.Getenv("DB_USER")
+	linuxUser := os.Getenv("USERNAME")
+
+	cmd := fmt.Sprintf(`../executables/replicate.sh %s %s %s %s %s %s %s %s`, project.DB, dbBucket, key, dbPassword, project.Project, user, linuxUser, project.IP)
 	_, err := exec.Command("/bin/bash", "-c", cmd).Output()
 
 	if err != nil {

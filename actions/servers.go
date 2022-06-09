@@ -35,8 +35,8 @@ func getRepos(userName string) ([]types.GithubJSONResponse, error) {
 	return repo, nil
 }
 
-func filterReport(projectName string) types.Project {
-	var project types.Project
+func filterReport(projectName string) []types.Project {
+	var project []types.Project
 	var projects []types.Project
 
 	body, err := os.ReadFile("projects.json")
@@ -48,14 +48,14 @@ func filterReport(projectName string) types.Project {
 	json.Unmarshal(body, &projects)
 	for i := 0; i < len(projects); i++ {
 		if strings.Contains(projects[i].Project, projectName) {
-			project = projects[i]
+			project = append(project, projects[i])
 		}
 	}
 
 	return project
 }
 
-func Deploy(all bool, userName, projectName string) {
+func Deploy(projectName string) {
 	var projects []types.Project
 
 	body, err := os.ReadFile("projects.json")
@@ -66,13 +66,10 @@ func Deploy(all bool, userName, projectName string) {
 
 	json.Unmarshal(body, &projects)
 
-	if all {
-		for i := 0; i < len(projects); i++ {
-			utils.DeployProject(projects[i])
-		}
-	} else {
-		deploymentProject := filterReport(projectName)
-		utils.DeployProject(deploymentProject)
+	deploymentProjects := filterReport(projectName)
+
+	for i := 0; i < len(deploymentProjects); i++ {
+		utils.DeployProject(projects[i])
 	}
 }
 
@@ -92,4 +89,22 @@ func SyncFiles() {
 	}
 
 	fmt.Printf("Finalized syncing folders.")
+}
+
+func Replicate(projectName string) {
+	var projects []types.Project
+
+	body, err := os.ReadFile("projects.json")
+
+	if err != nil {
+		log.Fatal("Failed getting repos %v\n", err)
+	}
+
+	json.Unmarshal(body, &projects)
+
+	projectsList := filterReport(projectName)
+
+	for i := 0; i < len(projectsList); i++ {
+		utils.ReplicateDB(projects[i])
+	}
 }
