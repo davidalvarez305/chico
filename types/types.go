@@ -2,12 +2,6 @@ package types
 
 import "time"
 
-type LaunchCommand struct{}
-
-type CrawlCommand struct{}
-
-type DeployCommand struct{}
-
 type GithubJSONResponse struct {
 	ID       int    `json:"id"`
 	NodeID   string `json:"node_id"`

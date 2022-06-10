@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"os/user"
 
 	"github.com/davidalvarez305/chico/actions"
 	"github.com/joho/godotenv"
@@ -38,7 +39,15 @@ func init() {
 }
 
 func main() {
-	err := godotenv.Load()
+	dir, err := user.Current()
+
+	if err != nil {
+		log.Fatal("Error getting current home directory.")
+	}
+
+	env := dir.HomeDir + "/chico/.env"
+
+	err = godotenv.Load(env)
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
