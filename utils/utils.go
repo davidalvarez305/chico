@@ -407,7 +407,7 @@ func ResolvePath(path string) (string, error) {
 		return p, err
 	}
 
-	p = u.HomeDir + path
+	p = u.HomeDir + "/" + path
 
 	return p, nil
 }
