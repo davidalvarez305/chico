@@ -215,15 +215,13 @@ func ChangeRecordSets(zoneId, domain, publicIp string) error {
 
 	client := route53.NewFromConfig(cfg)
 
-	comp, err := user.Current()
+	path, err := ResolvePath("projects.json")
 
 	if err != nil {
-		return err
+		log.Fatal("Failed resolving path to file\n", err)
 	}
 
-	file := fmt.Sprintf(comp.HomeDir + "/chico/change-hosted-zone.json")
-
-	content, err := ioutil.ReadFile(file)
+	content, err := ioutil.ReadFile(path)
 
 	if err != nil {
 		log.Fatal("Error loading Change Hosted Zones file.")

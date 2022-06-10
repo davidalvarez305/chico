@@ -106,7 +106,7 @@ func SyncFiles() {
 		utils.SecureCopy(projects[i].Key, projects[i].IP, projects[i].Project)
 	}
 
-	fmt.Printf("Finalized syncing folders.")
+	fmt.Printf("Finalized syncing folders.\n")
 }
 
 func Replicate(projectName string) {
