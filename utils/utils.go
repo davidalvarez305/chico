@@ -363,7 +363,7 @@ func CrawlProducts(keyword string) error {
 	url := os.Getenv("SOFLO_GO_URL")
 
 	b := map[string]string{
-		keyword: keyword,
+		"keyword": keyword,
 	}
 	client := &http.Client{}
 	out, err := json.Marshal(b)
@@ -372,6 +372,7 @@ func CrawlProducts(keyword string) error {
 		return err
 	}
 
+	fmt.Printf("%+v\n", bytes.NewBuffer(out))
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(out))
 	if err != nil {
 		fmt.Println("Request failed: ", err)
@@ -385,6 +386,15 @@ func CrawlProducts(keyword string) error {
 		return err
 	}
 	defer resp.Body.Close()
+
+	res, err := ioutil.ReadAll(resp.Body)
+
+	if err != nil {
+		fmt.Println("Error while reading response...", err)
+		return err
+	}
+
+	fmt.Printf("%+v\n", string(res))
 
 	return nil
 }

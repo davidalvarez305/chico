@@ -18,6 +18,7 @@ var (
 	domain    string
 	db        string
 	siteName  string
+	keyword   string
 	project   string
 	syncFiles bool
 )
@@ -33,6 +34,7 @@ func init() {
 	flag.StringVar(&db, "db", "", "Define this project's database.")
 	flag.StringVar(&siteName, "s", "", "Define this project's database.")
 	flag.StringVar(&project, "p", "", "Name of the project to be deployed.")
+	flag.StringVar(&keyword, "kw", "", "Seed keyword for crawling.")
 }
 
 func main() {
@@ -64,5 +66,9 @@ func main() {
 
 	if syncFiles {
 		actions.SyncFiles()
+	}
+
+	if crawl {
+		actions.Crawl(keyword)
 	}
 }
