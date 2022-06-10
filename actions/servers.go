@@ -39,7 +39,13 @@ func filterReport(projectName string) []types.Project {
 	var project []types.Project
 	var projects []types.Project
 
-	body, err := os.ReadFile("projects.json")
+	path, err := utils.ResolvePath("projects.json")
+
+	if err != nil {
+		log.Fatal("Failed resolving path to file\n", err)
+	}
+
+	body, err := os.ReadFile(path)
 
 	if err != nil {
 		log.Fatal("Failed getting repos %v\n", err)
@@ -58,7 +64,13 @@ func filterReport(projectName string) []types.Project {
 func Deploy(projectName string) {
 	var projects []types.Project
 
-	body, err := os.ReadFile("projects.json")
+	path, err := utils.ResolvePath("projects.json")
+
+	if err != nil {
+		log.Fatal("Failed resolving path to file\n", err)
+	}
+
+	body, err := os.ReadFile(path)
 
 	if err != nil {
 		log.Fatal("Failed getting repos %v\n", err)
@@ -76,10 +88,16 @@ func Deploy(projectName string) {
 func SyncFiles() {
 	var projects []types.Project
 
-	body, err := os.ReadFile("projects.json")
+	path, err := utils.ResolvePath("projects.json")
 
 	if err != nil {
-		log.Fatal("Failed getting repos %v\n", err)
+		log.Fatal("Failed resolving path to file\n", err)
+	}
+
+	body, err := os.ReadFile(path)
+
+	if err != nil {
+		log.Fatal("Failed reading file for sync\n", err)
 	}
 
 	json.Unmarshal(body, &projects)
@@ -94,7 +112,13 @@ func SyncFiles() {
 func Replicate(projectName string) {
 	var projects []types.Project
 
-	body, err := os.ReadFile("projects.json")
+	path, err := utils.ResolvePath("projects.json")
+
+	if err != nil {
+		log.Fatal("Failed resolving path to file\n", err)
+	}
+
+	body, err := os.ReadFile(path)
 
 	if err != nil {
 		log.Fatal("Failed getting repos %v\n", err)

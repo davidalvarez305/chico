@@ -1,3 +1,4 @@
 cli
 executables
-secret
+*.json
+*.env

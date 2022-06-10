@@ -398,3 +398,16 @@ func CrawlProducts(keyword string) error {
 
 	return nil
 }
+
+func ResolvePath(path string) (string, error) {
+	var p string
+	u, err := user.Current()
+
+	if err != nil {
+		return p, err
+	}
+
+	p = u.HomeDir + path
+
+	return p, nil
+}
