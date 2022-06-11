@@ -215,7 +215,7 @@ func ChangeRecordSets(zoneId, domain, publicIp string) error {
 
 	client := route53.NewFromConfig(cfg)
 
-	path, err := ResolvePath("projects.json")
+	path, err := ResolvePath([]string{"projects.json"})
 
 	if err != nil {
 		log.Fatal("Failed resolving path to file\n", err)
@@ -346,8 +346,14 @@ func ReplicateDB(project project.Project) error {
 	user := os.Getenv("DB_USER")
 	linuxUser := os.Getenv("USERNAME")
 
-	cmd := fmt.Sprintf(`../executables/replicate.sh %s %s %s %s %s %s %s %s`, project.DB, dbBucket, key, dbPassword, project.Project, user, linuxUser, project.IP)
-	_, err := exec.Command("/bin/bash", "-c", cmd).Output()
+	path, err := ResolvePath([]string{"executables", "replicate.sh"})
+
+	if err != nil {
+		return err
+	}
+
+	cmd := fmt.Sprintf(`%s %s %s %s %s %s %s %s %s`, path, project.DB, dbBucket, key, dbPassword, project.Project, user, linuxUser, project.IP)
+	_, err = exec.Command("/bin/bash", "-c", cmd).Output()
 
 	if err != nil {
 		return err
@@ -397,7 +403,7 @@ func CrawlProducts(keyword string) error {
 	return nil
 }
 
-func ResolvePath(path string) (string, error) {
+func ResolvePath(paths []string) (string, error) {
 	var p string
 	u, err := user.Current()
 
@@ -405,7 +411,11 @@ func ResolvePath(path string) (string, error) {
 		return p, err
 	}
 
-	p = u.HomeDir + "/chico/" + path
+	p = u.HomeDir + "/chico"
+
+	for i := 0; i < len(paths); i++ {
+		p = "/" + paths[i]
+	}
 
 	return p, nil
 }

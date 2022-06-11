@@ -39,7 +39,7 @@ func filterReport(projectName string) []types.Project {
 	var project []types.Project
 	var projects []types.Project
 
-	path, err := utils.ResolvePath("projects.json")
+	path, err := utils.ResolvePath([]string{"projects.json"})
 
 	if err != nil {
 		log.Fatal("Failed resolving path to file\n", err)
@@ -64,7 +64,7 @@ func filterReport(projectName string) []types.Project {
 func Deploy(projectName string) {
 	var projects []types.Project
 
-	path, err := utils.ResolvePath("projects.json")
+	path, err := utils.ResolvePath([]string{"projects.json"})
 
 	if err != nil {
 		log.Fatal("Failed resolving path to file\n", err)
@@ -88,7 +88,7 @@ func Deploy(projectName string) {
 func SyncFiles() {
 	var projects []types.Project
 
-	path, err := utils.ResolvePath("projects.json")
+	path, err := utils.ResolvePath([]string{"projects.json"})
 
 	if err != nil {
 		log.Fatal("Failed resolving path to file\n", err)
@@ -112,7 +112,7 @@ func SyncFiles() {
 func Replicate(projectName string) {
 	var projects []types.Project
 
-	path, err := utils.ResolvePath("projects.json")
+	path, err := utils.ResolvePath([]string{"projects.json"})
 
 	if err != nil {
 		log.Fatal("Failed resolving path to file\n", err)

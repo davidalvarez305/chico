@@ -25,7 +25,7 @@ func PurchaseDomain(domain string) {
 
 	client := route53domains.NewFromConfig(cfg)
 
-	path, err := utils.ResolvePath("register-domain.json")
+	path, err := utils.ResolvePath([]string{"register-domain.json"})
 
 	if err != nil {
 		log.Fatal("Failed resolving path to file\n", err)
