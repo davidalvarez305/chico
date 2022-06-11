@@ -56,21 +56,39 @@ func main() {
 	flag.Parse()
 
 	if purchase {
+		if domain == "" {
+			log.Fatal("Missing d flag.")
+		}
 		actions.PurchaseDomain(domain)
 		fmt.Printf("Domain purchased successfully.\n")
 	}
 
 	if launch {
+		if domain == "" {
+			log.Fatal("Missing d flag.")
+		}
+		if db == "" {
+			log.Fatal("Missing db flag.")
+		}
+		if siteName == "" {
+			log.Fatal("Missing s flag.")
+		}
 		actions.LaunchServer(domain, db, siteName)
 		fmt.Printf("Server launched successfully.\n")
 	}
 
 	if deploy {
+		if project == "" {
+			log.Fatal("Missing p flag.")
+		}
 		actions.Deploy(project)
 		fmt.Printf("Deployed successfully.\n")
 	}
 
 	if replicate {
+		if project == "" {
+			log.Fatal("Missing p flag.")
+		}
 		actions.Replicate(project)
 		fmt.Printf("DB SQl files uploaded & deployed successfully.\n")
 	}
@@ -80,6 +98,9 @@ func main() {
 	}
 
 	if crawl {
+		if keyword == "" {
+			log.Fatal("Missing kw flag.")
+		}
 		actions.Crawl(keyword)
 	}
 }
